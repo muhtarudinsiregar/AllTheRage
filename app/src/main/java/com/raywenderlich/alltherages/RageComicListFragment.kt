@@ -29,56 +29,92 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
+import android.os.Bundle
+import android.support.v7.widget.GridLayoutManager
+
+
 import com.raywenderlich.alltherages.databinding.RecyclerItemRageComicBinding
 
 
 class RageComicListFragment : Fragment() {
 
-  private lateinit var imageResIds: IntArray
-  private lateinit var names: Array<String>
-  private lateinit var descriptions: Array<String>
-  private lateinit var urls: Array<String>
+    private lateinit var imageResIds: IntArray
+    private lateinit var names: Array<String>
+    private lateinit var descriptions: Array<String>
+    private lateinit var urls: Array<String>
 
-  companion object {
+    companion object {
 
-    fun newInstance(): RageComicListFragment {
-      return RageComicListFragment()
-    }
-  }
-
-  internal inner class RageComicAdapter(context: Context) : RecyclerView.Adapter<ViewHolder>() {
-
-    private val layoutInflater: LayoutInflater
-
-    init {
-      layoutInflater = LayoutInflater.from(context)
+        fun newInstance(): RageComicListFragment {
+            return RageComicListFragment()
+        }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-      val recyclerItemRageComicBinding = RecyclerItemRageComicBinding.inflate(layoutInflater,
-          viewGroup, false)
-      return ViewHolder(recyclerItemRageComicBinding.root, recyclerItemRageComicBinding)
+    //access resource yg diperlukan via context untuk fragment yang di tempelkan
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        //get rage names and description
+        val resources = context!!.resources
+        names = resources.getStringArray(R.array.names)
+        descriptions = resources.getStringArray(R.array.descriptions)
+        urls = resources.getStringArray(R.array.urls)
+
+        //get rage face memes
+        val typedArray = resources.obtainTypedArray(R.array.images)
+        val imageCount = names.size
+        imageResIds = IntArray(imageCount)
+
+        for (i in 0..imageCount - 1) {
+            imageResIds[i] = typedArray.getResourceId(i, 0)
+        }
+        typedArray.recycle()
     }
 
-    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-      val comic = Comic(imageResIds[position], names[position],
-          descriptions[position], urls[position])
-      viewHolder.setData(comic)
+    //where views is generate
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view: View = inflater!!.inflate(R.layout.fragment_rage_comic_list, container, false)
+        val activity = activity
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view) as RecyclerView
+        recyclerView.layoutManager = GridLayoutManager(activity, 2)
+        recyclerView.adapter = RageComicAdapter(activity)
+        return view
     }
 
-    override fun getItemCount(): Int {
-      return names.size
-    }
-  }
 
-  internal inner class ViewHolder constructor(itemView: View,
-                                              val recyclerItemRageComicBinding:
-                                              RecyclerItemRageComicBinding) :
-      RecyclerView.ViewHolder(itemView) {
+    internal inner class RageComicAdapter(context: Context) : RecyclerView.Adapter<ViewHolder>() {
 
-    fun setData(comic: Comic) {
-      recyclerItemRageComicBinding.comic = comic
+        private val layoutInflater: LayoutInflater
+
+        init {
+            layoutInflater = LayoutInflater.from(context)
+        }
+
+        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
+            val recyclerItemRageComicBinding = RecyclerItemRageComicBinding.inflate(layoutInflater,
+                    viewGroup, false)
+            return ViewHolder(recyclerItemRageComicBinding.root, recyclerItemRageComicBinding)
+        }
+
+        override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+            val comic = Comic(imageResIds[position], names[position],
+                    descriptions[position], urls[position])
+            viewHolder.setData(comic)
+        }
+
+        override fun getItemCount(): Int {
+            return names.size
+        }
     }
-  }
+
+    internal inner class ViewHolder constructor(itemView: View,
+                                                val recyclerItemRageComicBinding:
+                                                RecyclerItemRageComicBinding) :
+            RecyclerView.ViewHolder(itemView) {
+
+        fun setData(comic: Comic) {
+            recyclerItemRageComicBinding.comic = comic
+        }
+    }
 
 }

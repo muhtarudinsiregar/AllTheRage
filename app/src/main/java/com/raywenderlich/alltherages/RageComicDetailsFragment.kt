@@ -31,18 +31,17 @@ import android.view.ViewGroup
 //1
 class RageComicDetailsFragment : Fragment() {
 
-  //2
-  companion object {
+    //2 Provides a method for creating new instances of the fragment, a factory method.
+    companion object {
 
-    fun newInstance(): RageComicDetailsFragment {
-      return RageComicDetailsFragment()
+        fun newInstance(): RageComicDetailsFragment {
+            return RageComicDetailsFragment()
+        }
     }
-  }
 
-  //3
-  override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View? {
-    return inflater?.inflate(R.layout.fragment_rage_comic_details, container, false)
-  }
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        return inflater?.inflate(R.layout.fragment_rage_comic_details, container, false)
+    }
 
 }

@@ -25,7 +25,15 @@ package com.raywenderlich.alltherages
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), RageComicListFragment.onRageComicSelected {
+    override fun onRageComicSelected(comic: Comic) {
+        val detailsFragment = RageComicDetailsFragment.newInstance(comic)
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.root_layout, detailsFragment, "rageComicDetail")
+                .addToBackStack(null)
+                .commit()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,5 +45,6 @@ class MainActivity : AppCompatActivity() {
                     .commit()
         }
     }
+
 
 }

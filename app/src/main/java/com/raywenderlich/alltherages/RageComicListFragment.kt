@@ -22,17 +22,15 @@
 
 package com.raywenderlich.alltherages
 
+
 import android.content.Context
+import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
-
-
 import com.raywenderlich.alltherages.databinding.RecyclerItemRageComicBinding
 
 
@@ -42,6 +40,7 @@ class RageComicListFragment : Fragment() {
     private lateinit var names: Array<String>
     private lateinit var descriptions: Array<String>
     private lateinit var urls: Array<String>
+    private lateinit var listener: onRageComicSelected
 
     companion object {
 
@@ -53,6 +52,12 @@ class RageComicListFragment : Fragment() {
     //access resource yg diperlukan via context untuk fragment yang di tempelkan
     override fun onAttach(context: Context?) {
         super.onAttach(context)
+
+        if (context is onRageComicSelected) {
+            listener = context
+        } else {
+            throw ClassCastException(context.toString() + " must implement OnRageComicSelected.")
+        }
 
         //get rage names and description
         val resources = context!!.resources
@@ -81,6 +86,10 @@ class RageComicListFragment : Fragment() {
         return view
     }
 
+    interface onRageComicSelected {
+        fun onRageComicSelected(comic: Comic)
+    }
+
 
     internal inner class RageComicAdapter(context: Context) : RecyclerView.Adapter<ViewHolder>() {
 
@@ -100,6 +109,8 @@ class RageComicListFragment : Fragment() {
             val comic = Comic(imageResIds[position], names[position],
                     descriptions[position], urls[position])
             viewHolder.setData(comic)
+
+            viewHolder.itemView.setOnClickListener { listener.onRageComicSelected(comic) }
         }
 
         override fun getItemCount(): Int {
